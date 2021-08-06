@@ -4,6 +4,9 @@ import http from 'http'
 import * as io from "socket.io"
 //const { socketController } = require('../sockets/controller');
 import { socketController } from '../sockets/controller.js';
+import { dbConnection } from '../database/config.js';
+
+import coordenada from "../routes/coordenada.js";
 
 class Server {
 
@@ -15,6 +18,8 @@ class Server {
 
         this.paths = {};
 
+        this.conectarDB();
+
         // Middlewares
         this.middlewares();
 
@@ -25,20 +30,32 @@ class Server {
         this.sockets();
     }
 
+    async conectarDB(){
+        await dbConnection()
+    }
+
     middlewares() {
 
         // CORS
         this.app.use( cors() );
 
+        //parseo y lectura del body
+        this.app.use(express.json());
+
         // Directorio Público
         this.app.use( express.static('public') );
 
+        this.app.use((err, req, res, next) => {
+            if (err instanceof SyntaxError && err.status === 400 && "body" in err) {
+                //console.error(err);
+                return res.status(400).send({ status: 404, message: err.message }); // Bad request
+            }
+            next();
+        });
     }
 
-    routes() {
-        
-        // this.app.use( this.paths.auth, require('../routes/auth'));
-        
+    routes() {        
+        this.app.use('/api/coordenada',coordenada);        
     }
 
     sockets() {

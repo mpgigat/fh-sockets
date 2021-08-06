@@ -1,50 +1,57 @@
-
-// Referencias del HTML
-const lblOnline  = document.querySelector('#lblOnline');
 const lblOffline = document.querySelector('#lblOffline');
-const txtMensaje = document.querySelector('#txtMensaje');
-const btnEnviar  = document.querySelector('#btnEnviar');
+const lblOnline = document.querySelector('#lblOnline');
+const lblCoordenadas = document.querySelector('#lblCoordenadas');
+const btnEnviar = document.querySelector('button');
+const txtCoordenada = document.querySelector('#txtCoordenada');
+const txtId = document.querySelector('#txtId');
 
 
 const socket = io();
 
+const mostrarCoordenadas = (coordenadas) => {
+    let txt = "";
+    coordenadas.forEach(myFunction);
+    document.getElementById("lblCoordenadas").innerHTML = txt;
 
+    function myFunction(value, index, array) {
+        txt += value.iddispositivo + "=>"+value.coordenada + "<br>";
+    }
+}
 
 socket.on('connect', () => {
-    // console.log('Conectado');
+    console.log('Conectado');
 
     lblOffline.style.display = 'none';
-    lblOnline.style.display  = '';
+    lblOnline.style.display = '';
 
 });
 
 socket.on('disconnect', () => {
     // console.log('Desconectado del servidor');
 
-    lblOnline.style.display  = 'none';
+    lblOnline.style.display = 'none';
     lblOffline.style.display = '';
 });
 
 
-socket.on('enviar-mensaje', (payload) => {
-    console.log( payload )
+socket.on('coordenadas', (coordenadas) => {
+    mostrarCoordenadas(coordenadas)
+    console.log('Desde el server Broadcast', coordenadas);
 })
 
 
-btnEnviar.addEventListener( 'click', () => {
+btnEnviar.addEventListener('click', () => {
 
-    const mensaje = txtMensaje.value;
+    const coordenada = txtCoordenada.value;
+    const id = txtId.value;
     const payload = {
-        mensaje,
-        id: '123ABC',
-        fecha: new Date().getTime()
+        coordenada,
+        iddispositivo: id,
     }
-    
-    socket.emit( 'enviar-mensaje', payload, ( id ) => {
-        console.log('Desde el server', id );
-    });// el tercer elemento es un callback para responder
-        // por el mismo medio, util por ejemplo cuando se 
-        //guarda en una bd y se devuelve la restpusta.
-        //hacer primero el ejemplo hasta payload.
+
+    socket.emit('coordenadaPost', payload, (coordenadas) => {
+        mostrarCoordenadas(coordenadas)
+        console.log('Desde el server', coordenadas);
+    });
 
 });
