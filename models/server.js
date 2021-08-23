@@ -43,7 +43,7 @@ class Server {
         this.app.use(express.json());
 
         // Directorio Público
-        this.app.use( express.static('public') );
+       // this.app.use( express.static('public') );
 
         this.app.use((err, req, res, next) => {
             if (err instanceof SyntaxError && err.status === 400 && "body" in err) {
