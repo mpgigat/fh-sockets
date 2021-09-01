@@ -36,7 +36,7 @@ const coordenadasController = {
     },
 
     coordenadaSocketPost: async (body) => {
-        ingresoCoordenadaBd(body)
+        await ingresoCoordenadaBd(body)
         const coordenadas = await Coordenada.find()
         return coordenadas
     },
