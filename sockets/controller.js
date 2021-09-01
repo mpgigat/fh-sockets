@@ -11,7 +11,7 @@ const socketController = (socket) => {
     });
 
     socket.on('coordenadaPost',async ( payload, callback ) => {
-
+        console.log(`Coordanada: ${payload}`);
         const coordenadas = await coordenadasController.coordenadaSocketPost(payload )
 console.log(`Coordanada: ${coordenadas}`);
         callback( coordenadas );//primero sin estas dos lineas
